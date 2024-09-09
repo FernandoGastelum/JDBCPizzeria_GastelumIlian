@@ -17,12 +17,16 @@ import javax.swing.table.DefaultTableModel;
 public class FrmPrincipal extends javax.swing.JFrame {
     Conexion c = new Conexion();
     
+    
 
     /**
      * Creates new form FrmPrincipal
      */
     public FrmPrincipal() {
         initComponents();
+        c.crearConexion();
+        cargarTabla();
+        
     }
 
     /**
@@ -42,14 +46,21 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TablaProductos = new javax.swing.JTable();
-        BTN = new javax.swing.JButton();
+        BTN2 = new javax.swing.JButton();
+        BTN1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Nombre");
 
+        NombreTxt.setColumns(15);
+
+        PrecioTxt.setColumns(15);
+        PrecioTxt.setToolTipText("");
+
         jLabel2.setText("Precio");
 
+        DescripcionTxt.setColumns(15);
         DescripcionTxt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DescripcionTxtActionPerformed(evt);
@@ -60,22 +71,46 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         TablaProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "ID_Producto", "Nombre", "Descripcion", "Precio"
             }
         ));
+        TablaProductos.addContainerListener(new java.awt.event.ContainerAdapter() {
+            public void componentAdded(java.awt.event.ContainerEvent evt) {
+                TablaProductosComponentAdded(evt);
+            }
+        });
+        TablaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                TablaProductosMouseClicked(evt);
+            }
+        });
+        TablaProductos.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TablaProductosKeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(TablaProductos);
+        if (TablaProductos.getColumnModel().getColumnCount() > 0) {
+            TablaProductos.getColumnModel().getColumn(0).setHeaderValue("ID_Producto");
+            TablaProductos.getColumnModel().getColumn(1).setHeaderValue("Nombre");
+            TablaProductos.getColumnModel().getColumn(2).setHeaderValue("Descripcion");
+            TablaProductos.getColumnModel().getColumn(3).setHeaderValue("Precio");
+        }
 
-        BTN.setText("Guardar");
-        BTN.setEnabled(false);
-        BTN.addActionListener(new java.awt.event.ActionListener() {
+        BTN2.setText("Agregar");
+        BTN2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BTNActionPerformed(evt);
+                BTN2ActionPerformed(evt);
+            }
+        });
+
+        BTN1.setText("Cancelar");
+        BTN1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BTN1ActionPerformed(evt);
             }
         });
 
@@ -85,24 +120,27 @@ public class FrmPrincipal extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel1)
                     .addComponent(NombreTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(PrecioTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
                     .addComponent(DescripcionTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(BTN))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(BTN1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(BTN2)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 297, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -115,32 +153,120 @@ public class FrmPrincipal extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(DescripcionTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(BTN)))
+                        .addGap(29, 29, 29))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(BTN2)
+                        .addComponent(BTN1)))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void DescripcionTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DescripcionTxtActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_DescripcionTxtActionPerformed
 
-    private void BTNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTNActionPerformed
-        c.crearConexion();
+    private void BTN2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN2ActionPerformed
         ProductoDAO p = new ProductoDAO(c);
+        Producto producto = new Producto(NombreTxt.getText(), DescripcionTxt.getText(), Float.valueOf(PrecioTxt.getText()));
+        DefaultTableModel model = (DefaultTableModel) TablaProductos.getModel();
+        if(BTN2.getText()=="Agregar"){
+            if(p.agregar(producto)){
+                java.util.List<Producto> listaProductos = p.consultar();
+                model.addRow(new Object[]{
+                listaProductos.get(listaProductos.size()-1).getId(), // Aquí debes obtener el ID si es autogenerado
+                producto.getNombre(),
+                producto.getDescripcion(),
+                producto.getPrecio()});
+                
+            }
+            
+        }
+        else{
+            int selectedRow = TablaProductos.getSelectedRow();
+            producto.setId(Integer.parseInt(model.getValueAt(selectedRow, 0).toString()));
+            
+            //actualizar
+            if(p.actualizar(producto)){
+                
+                
+                System.out.println(producto.getId());
+                model.setValueAt(producto.getId(), selectedRow, 0);
+                model.setValueAt(producto.getNombre(), selectedRow, 1);
+                model.setValueAt(producto.getDescripcion(), selectedRow, 2);
+                model.setValueAt(producto.getPrecio(), selectedRow, 3);
+                
+            }
+        }
         
-        p.agregar(new Producto(NombreTxt.toString(), DescripcionTxt.toString(), Float.valueOf(PrecioTxt.toString())));
         
-        TablaProductos.setValueAt(p, 0, 0);
+    }//GEN-LAST:event_BTN2ActionPerformed
+
+    private void BTN1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BTN1ActionPerformed
+        // TODO add your handling code here:
+        if(BTN1.getText()=="Cancelar"){
+            this.dispose();
+        }
+        else{
+            //eliminar
+            int selectedRow = TablaProductos.getSelectedRow();
+            ProductoDAO p = new ProductoDAO(c);
+            DefaultTableModel model = (DefaultTableModel) TablaProductos.getModel();
+            int id = Integer.parseInt(model.getValueAt(selectedRow, 0).toString());
+            if(p.eliminar(id)){
+                model.removeRow(selectedRow);
+                NombreTxt.setText("");
+                DescripcionTxt.setText("");
+                PrecioTxt.setText("");
+            }
+        }
         
-    }//GEN-LAST:event_BTNActionPerformed
+    }//GEN-LAST:event_BTN1ActionPerformed
+
+    private void TablaProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TablaProductosMouseClicked
+
+        
+        BTN1.setText("Eliminar");
+        BTN2.setText("Actualizar");
+        int selectedRow = TablaProductos.getSelectedRow();
+        if (selectedRow != -1) { 
+            DefaultTableModel model = (DefaultTableModel) TablaProductos.getModel();
+
+            
+            String nombre = model.getValueAt(selectedRow, 1).toString();
+            String descripcion = model.getValueAt(selectedRow, 2).toString();
+            String precio = model.getValueAt(selectedRow, 3).toString();
+
+            
+            NombreTxt.setText(nombre);
+            DescripcionTxt.setText(descripcion);
+            PrecioTxt.setText(precio);
+        }
+        
+    }//GEN-LAST:event_TablaProductosMouseClicked
+
+    private void TablaProductosComponentAdded(java.awt.event.ContainerEvent evt) {//GEN-FIRST:event_TablaProductosComponentAdded
+       BTN2.setText("Agregar");
+       BTN1.setText("Cancelar");
+    }//GEN-LAST:event_TablaProductosComponentAdded
+
+    private void TablaProductosKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TablaProductosKeyPressed
+        if(evt.getKeyCode()== java.awt.event.KeyEvent.VK_ESCAPE){
+            BTN2.setText("Agregar");
+            BTN1.setText("Cancelar");
+            NombreTxt.setText("");
+            DescripcionTxt.setText("");
+            PrecioTxt.setText("");
+        }
+    }//GEN-LAST:event_TablaProductosKeyPressed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -168,15 +294,31 @@ public class FrmPrincipal extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 
+                
                 new FrmPrincipal().setVisible(true);
                 
                 
             }
         });
     }
+    public void cargarTabla(){
+        
+        ProductoDAO pDAO = new ProductoDAO(c);
+        java.util.List<Producto> listaProductos = pDAO.consultar();
+        DefaultTableModel model = (DefaultTableModel) TablaProductos.getModel();
+        for (Producto producto : listaProductos) {
+        model.addRow(new Object[]{
+            producto.getId(), 
+            producto.getNombre(), 
+            producto.getDescripcion(), 
+            producto.getPrecio()
+            });
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton BTN;
+    private javax.swing.JButton BTN1;
+    private javax.swing.JButton BTN2;
     private javax.swing.JTextField DescripcionTxt;
     private javax.swing.JTextField NombreTxt;
     private javax.swing.JTextField PrecioTxt;

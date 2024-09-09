@@ -70,13 +70,13 @@ public class ProductoDAO implements IProductoDAO{
     @Override
     public boolean actualizar(Producto producto) {
         Connection bd = conexion.crearConexion();
-        String actualizar ="UPDATE Producto SET (nombre, precio, descripcion) = (?,?,?)";
+        String actualizar ="UPDATE Producto SET Nombre = ?, Precio= ?, Descripcion = ? WHERE ID = ?";
         try {
             PreparedStatement i = bd.prepareStatement(actualizar);
             i.setString(1, producto.getNombre());
             i.setFloat(2, producto.getPrecio());
             i.setString(3, producto.getDescripcion());
-            
+            i.setInt(4, producto.getId());
             i.executeUpdate();
             
             return true;

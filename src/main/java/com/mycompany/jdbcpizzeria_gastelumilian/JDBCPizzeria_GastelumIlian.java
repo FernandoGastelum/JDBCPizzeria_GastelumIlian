@@ -16,7 +16,7 @@ import dao.ProductoDAO;
 public class JDBCPizzeria_GastelumIlian {
 
     public static void main(String[] args) {
-        Conexion c = new Conexion();
+        /*Conexion c = new Conexion();
         c.crearConexion();
         ProductoDAO producto = new ProductoDAO(c);
         
